@@ -18,6 +18,7 @@ class CreateComicsTable extends Migration
             $table->string('title');
             $table->string('alt_title');
             $table->string('slug');
+            $table->string('author');
             $table->string('genre');
             $table->string('type');
             $table->string('colour');
@@ -29,6 +30,7 @@ class CreateComicsTable extends Migration
             $table->string('status');
             $table->string('theme');
             $table->string('img');
+            $table->text('excerpt');
             $table->timestamps();
         });
     }

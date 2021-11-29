@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Comic;
+use App\Models\Chapter;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 
@@ -29,16 +30,29 @@ class ComicController extends Controller
      * @param  mixed $id
      * @return void
      */
-    public function show($id)
+    public function show($slug)
     {
         //find post by ID
-        $comic = Comic::findOrfail($id);
+        $comic = Comic::where('slug', $slug)->first();
+        if($comic === null){
+            return response()->json([
+                'success' => true,
+                'message' => 'Detail Data Post',
+                'data'    => null
+            ], 200);
+        }
+        $chapter = Chapter::where('comic_id', $comic->id)->get();
+        
+        $data = [
+            'detail' => $comic,
+            'chapter_list' => $chapter
+        ];
 
         //make response JSON
         return response()->json([
             'success' => true,
             'message' => 'Detail Data Post',
-            'data'    => $comic 
+            'data'    => $data
         ], 200);
 
     }
@@ -59,6 +73,7 @@ class ComicController extends Controller
         $validator = Validator::make($request->all(), [
             'title'   => 'required',
             'alt_title' => 'required',
+            'author' => 'required',
             'genre' => 'required',
             'type' => 'required',
             'colour' => 'required',
@@ -70,6 +85,7 @@ class ComicController extends Controller
             'status' => 'required',
             'theme' => 'required',
             'img' => 'required',
+            'excerpt' => 'required',
         ]);
         
         //response error validation
@@ -83,6 +99,7 @@ class ComicController extends Controller
             'title'     => $request->title,
             'alt_title'   => $request->alt_title,
             'slug'   => Str::slug($request->title),
+            'author' => $request->author,
             'genre'   => $request->genre,
             'type'   => $request->type,
             'colour'   => $request->colour,
@@ -94,6 +111,7 @@ class ComicController extends Controller
             'status'   => $request->status,
             'theme'   => $request->theme,
             'img'   => $request->img,
+            'excerpt'   => $request->excerpt,
         ]);
 
         //success save to database

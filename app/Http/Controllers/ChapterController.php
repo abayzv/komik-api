@@ -31,13 +31,33 @@ class ChapterController extends Controller
     public function show($slug)
     {
         //find post by ID
+        $allchap = Chapter::pluck('slug');
         $chapter = Chapter::where('slug', $slug)->first();
+        $chap = $allchap->toArray();
+        $totchap = count($chap);
+
+            // get previous user id
+        $getchap = array_search($chapter->slug, $chap);
+        if(($getchap + 1) <= $totchap){
+            $prev = $chap[$getchap + 1];
+        }else{
+            $prev = null;
+        }
+
+        if(($getchap - 1) < 0){
+            $next = null;
+        }else{
+            $next = $chap[$getchap - 1];
+        }
+        
 
         $data = [
             'comic_id' => $chapter->comic_id,
             'name' => $chapter->name,
             'slug' => $chapter->slug,
             'img' => explode(",",$chapter->img),
+            'next' => $next,
+            'prev' => $prev,
         ];
 
         //make response JSON
